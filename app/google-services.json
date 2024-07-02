@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "143052505307",
+    "project_id": "plutoplex-e1dd2",
+    "storage_bucket": "plutoplex-e1dd2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143052505307:android:26466ebf93daf3116e4cfe",
+        "android_client_info": {
+          "package_name": "com.lazydeveloper.plutoplex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiiig9OaiN2EeqYH06-ZN2ltBCWk2I-1E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

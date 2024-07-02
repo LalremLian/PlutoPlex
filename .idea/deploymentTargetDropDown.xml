@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="deploymentTargetDropDown">
+    <value>
+      <entry key="app">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\amawn\.android\avd\Pixel_7_API_33.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+<<<<<<< HEAD
+          <timeTargetWasSelectedWithDropDown value="2024-04-29T04:33:24.640956100Z" />
+=======
+          <timeTargetWasSelectedWithDropDown value="2024-04-30T04:28:09.691229200Z" />
+>>>>>>> home
+        </State>
+      </entry>
+    </value>
+  </component>
+</project>
