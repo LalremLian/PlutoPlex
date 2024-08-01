@@ -5,12 +5,13 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.lazydeveloper.data.repository.AppRepositorySecond
 import com.lazydeveloper.network.model.PopularMovieResponse
+import com.lazydeveloper.network.model.global.Result
 
 class MoviePagingSource(
     private val appRepo: AppRepositorySecond
-) : PagingSource<Int, PopularMovieResponse.Result>() {
+) : PagingSource<Int, Result>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PopularMovieResponse.Result> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Result> {
         return try {
             val nextPage = params.key ?: 1
             val response = appRepo.fetchTopRatedMoviesPOST(nextPage)
@@ -25,7 +26,7 @@ class MoviePagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, PopularMovieResponse.Result>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, Result>): Int? {
         return state.anchorPosition
     }
 

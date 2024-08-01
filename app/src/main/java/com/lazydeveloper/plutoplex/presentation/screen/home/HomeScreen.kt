@@ -43,7 +43,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,9 +50,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
-import com.lazydeveloper.plutoplex.R
 import com.lazydeveloper.data.Resource
 import com.lazydeveloper.network.model.FireStoreServer
+import com.lazydeveloper.plutoplex.R
 import com.lazydeveloper.plutoplex.navigation.Screen
 import com.lazydeveloper.plutoplex.presentation.composables.AnimatedPreloader
 import com.lazydeveloper.plutoplex.presentation.composables.CustomAlertDialog
@@ -61,13 +60,13 @@ import com.lazydeveloper.plutoplex.presentation.composables.CustomImage
 import com.lazydeveloper.plutoplex.presentation.composables.CustomImageAsync
 import com.lazydeveloper.plutoplex.presentation.composables.CustomImageCarousel
 import com.lazydeveloper.plutoplex.presentation.composables.CustomText
+import com.lazydeveloper.plutoplex.presentation.composables.showInterstitial
+import com.lazydeveloper.plutoplex.presentation.composables.showInterstitial2
 import com.lazydeveloper.plutoplex.ui.theme.Background_Black_10
 import com.lazydeveloper.plutoplex.ui.theme.Background_Black_70
 import com.lazydeveloper.plutoplex.ui.theme.Loading_Orange
 import com.lazydeveloper.plutoplex.util.CommonEnum
 import com.lazydeveloper.plutoplex.util.getSharedPrefs
-import com.lazydeveloper.plutoplex.presentation.composables.showInterstitial
-import com.lazydeveloper.plutoplex.presentation.composables.showInterstitial2
 import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -213,9 +212,10 @@ fun HomeScreen(
                         val movie = it.data
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth()
                                 .wrapContentHeight()
-                                .padding(top = 20.dp)
+//                                .fillMaxWidth()
+//                                .wrapContentHeight()
+//                                .padding(top = 20.dp)
                                 .background(Color.Transparent)
                         ) {
                             CustomImageCarousel(movie, navController)
@@ -237,140 +237,30 @@ fun HomeScreen(
                     is Resource.Loading -> {}
 
                     is Resource.Success -> {
-                        val movie = it.data
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color.Transparent),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            CustomText(
-                                text = "Trending Movies",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.White,
-                                modifier = Modifier
-                                    .padding(start = 16.dp)
-                            )
-                            CustomText(
-                                text = "View all",
-                                fontSize = 16.sp,
-                                color = Loading_Orange,
-                                modifier = Modifier
-                                    .padding(end = 16.dp)
-                                    .clickable {
-                                        navController.navigate(
-                                            Screen.MovieScreen.passArguments(0)
-                                        ) {
-                                            popUpTo(Screen.HomeScreen.route) {
-                                                inclusive = false
-                                            }
-                                        }
-                                    }
-                            )
-
-                        }
-                        LazyRow(
-                            modifier = Modifier
-                                .height(240.dp)
-                                .fillMaxWidth(),
-                            contentPadding = PaddingValues(10.dp),
-                        ) {
-                            movie.results?.forEach {
-                                item {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(280.dp)
-                                            .background(Color.Transparent)
-                                            .padding(end = 10.dp)
+                        Header(
+                            title = "Trending Movies",
+                            showViewAll = true,
+                            onClickViewAll = {
+                                navController.navigate(
+                                    Screen.MovieScreen.passArguments(0)
+                                ) {
+                                    navController.navigate(
+                                        Screen.MovieScreen.passArguments(0)
                                     ) {
-                                        Box(modifier = Modifier
-                                            .width(135.dp)
-                                            .height(180.dp)
-                                            .clickable {
-                                                navController.navigate(
-                                                    Screen.MovieDetailsScreen.passArguments(
-                                                        it?.id ?: 0
-                                                    )
-                                                )
-                                            }
-                                        ) {
-                                            if(isEmpty != ""){
-                                                CustomImage(
-                                                    imageId =  R.drawable.ic_logo,
-                                                    modifier = Modifier
-                                                        .clip(RoundedCornerShape(8.dp))
-                                                        .fillMaxSize(),
-                                                    contentDescription = "ImageRequest example",
-                                                )
-                                            }else{
-                                                CustomImageAsync(
-                                                    imageUrl = "${mPref.getString(CommonEnum.TMDB_IMAGE_PATH.toString(),"")}${it?.posterPath}",
-                                                    size = 512,
-                                                    modifier = Modifier
-                                                        .clip(RoundedCornerShape(6.dp))
-                                                        .fillMaxSize(),
-                                                    contentScale = ContentScale.FillBounds,
-                                                    contentDescription = "poster",
-                                                )
-                                            }
-
-                                            Box(
-                                                modifier = Modifier
-                                                    .width(35.dp)
-                                                    .height(25.dp)
-                                                    .padding(start = 5.dp, top = 5.dp)
-                                                    .clip(RoundedCornerShape(6.dp))
-                                                    .align(Alignment.TopStart)
-                                                    .background(Background_Black_70)
-                                            )
-                                            {
-                                                CustomText(
-                                                    text = "HD",
-                                                    fontSize = 14.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = Color.White,
-                                                    textAlign = TextAlign.Center,
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .align(Alignment.Center)
-                                                )
-                                            }
-                                        }
-                                        if(isEmpty != ""){
-                                            CustomText(
-                                                text = stringResource(id = R.string.app_name),
-                                                fontSize = 12.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = Color.White,
-                                                maxLines = 2,
-                                                overFlow = TextOverflow.Ellipsis,
-                                                modifier = Modifier
-                                                    .width(130.dp)
-                                                    .padding(start = 6.dp, top = 5.dp, end = 6.dp)
-                                                    .align(Alignment.Start)
-                                            )
-                                        }else{
-
-                                            CustomText(
-                                                text = it?.title ?: "Error",
-                                                fontSize = 12.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = Color.White,
-                                                maxLines = 2,
-                                                overFlow = TextOverflow.Ellipsis,
-                                                modifier = Modifier
-                                                    .width(130.dp)
-                                                    .padding(start = 6.dp, top = 5.dp, end = 6.dp)
-                                                    .align(Alignment.Start)
-                                            )
+                                        popUpTo(Screen.HomeScreen.route) {
+                                            inclusive = false
                                         }
                                     }
                                 }
                             }
-                        }
+                        )
+
+                        FetchData(
+                            results = it.data.results,
+                            isEmpty = isEmpty,
+                            mPref = mPref,
+                            navController = navController
+                        )
                     }
 
                     is Resource.Error -> {}
@@ -384,154 +274,33 @@ fun HomeScreen(
         item {
             networkState.let {
                 when (it) {
-                    is Resource.Loading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            LinearProgressIndicator(
-                                color = Loading_Orange,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(2.dp)
-                                    .align(Alignment.BottomCenter)
-                            )
-                        }
-                    }
+                    is Resource.Loading -> { LinearProgressIndicator() }
 
                     is Resource.Success -> {
-                        val movie = it.data
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color.Transparent),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            CustomText(
-                                text = "Popular Movies",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.White,
-                                modifier = Modifier
-                                    .padding(start = 16.dp)
-                            )
-                            CustomText(
-                                text = "View all",
-                                fontSize = 16.sp,
-                                color = Loading_Orange,
-                                modifier = Modifier
-                                    .padding(end = 16.dp)
-                                    .clickable {
-                                        navController.navigate(
-                                            Screen.MovieScreen.passArguments(1)
-                                        ) {
-                                            popUpTo(Screen.HomeScreen.route) {
-                                                inclusive = false
-                                            }
-                                        }
-                                    }
-                            )
-                        }
-                        LazyRow(
-                            modifier = Modifier
-                                .height(240.dp)
-                                .fillMaxWidth(),
-                            contentPadding = PaddingValues(10.dp),
-                        ) {
-                            movie.results?.forEach {
-                                item {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(280.dp)
-                                            .background(Color.Transparent)
-                                            .padding(end = 10.dp)
+                        Header(
+                            title = "Popular Movies",
+                            showViewAll = true,
+                            onClickViewAll = {
+                                navController.navigate(
+                                    Screen.MovieScreen.passArguments(1)
+                                ) {
+                                    navController.navigate(
+                                        Screen.MovieScreen.passArguments(1)
                                     ) {
-                                        Box(modifier = Modifier
-                                            .width(130.dp)
-                                            .height(180.dp)
-                                            .clickable {
-                                                navController.navigate(
-                                                    Screen.MovieDetailsScreen.passArguments(
-                                                        it?.id ?: 0
-                                                    )
-                                                )
-                                            }
-                                        ) {
-                                            if(isEmpty != ""){
-                                                CustomImage(
-                                                    imageId =  R.drawable.ic_logo,
-                                                    modifier = Modifier
-                                                        .clip(RoundedCornerShape(8.dp))
-                                                        .fillMaxSize(),
-                                                    contentDescription = "logo",
-                                                )
-                                            }else{
-                                                CustomImageAsync(
-                                                    imageUrl = "${mPref.getString(CommonEnum.TMDB_IMAGE_PATH.toString(),"")}${it?.posterPath}",
-                                                    size = 512,
-                                                    modifier = Modifier
-                                                        .clip(RoundedCornerShape(6.dp))
-                                                        .fillMaxSize(),
-                                                    contentScale = ContentScale.FillBounds,
-                                                    contentDescription = "ImageRequest example",
-                                                )
-                                            }
-
-                                            Box(
-                                                modifier = Modifier
-                                                    .width(35.dp)
-                                                    .height(25.dp)
-                                                    .padding(start = 5.dp, top = 5.dp)
-                                                    .clip(RoundedCornerShape(6.dp))
-                                                    .align(Alignment.TopStart)
-                                                    .background(Background_Black_70)
-                                            )
-                                            {
-                                                CustomText(
-                                                    text = "HD",
-                                                    fontSize = 14.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = Color.White,
-                                                    modifier = Modifier
-                                                        .align(Alignment.Center)
-                                                )
-                                            }
-                                        }
-                                        if(isEmpty != ""){
-                                            CustomText(
-                                                text = stringResource(id = R.string.app_name),
-                                                fontSize = 12.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = Color.White,
-                                                maxLines = 2,
-                                                overFlow = TextOverflow.Ellipsis,
-                                                modifier = Modifier
-                                                    .width(130.dp)
-                                                    .padding(start = 6.dp, top = 5.dp, end = 6.dp)
-                                                    .align(Alignment.Start)
-                                            )
-                                        }else{
-
-                                            CustomText(
-                                                text = it?.title ?: "Error",
-                                                fontSize = 12.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = Color.White,
-                                                maxLines = 2,
-                                                overFlow = TextOverflow.Ellipsis,
-                                                modifier = Modifier
-                                                    .width(130.dp)
-                                                    .padding(start = 6.dp, top = 5.dp, end = 6.dp)
-                                                    .align(Alignment.Start)
-                                            )
+                                        popUpTo(Screen.HomeScreen.route) {
+                                            inclusive = false
                                         }
                                     }
                                 }
                             }
-                        }
+                        )
 
-
+                        FetchData(
+                            results = it.data.results,
+                            isEmpty = isEmpty,
+                            mPref = mPref,
+                            navController = navController
+                        )
                     }
 
                     is Resource.Error -> {

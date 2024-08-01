@@ -1,6 +1,7 @@
 package com.lazydeveloper.plutoplex.util
 
 import com.lazydeveloper.network.model.FilterItem
+import com.lazydeveloper.network.model.global.Result
 
 const val AffiliateLink = "https://affpa.top/L?tag=d_3343257m_97c_&site=3343257&ad=97"
 const val VisitUs = "https://clvplex.blogspot.com/"
@@ -28,6 +29,43 @@ object Types {
         FilterItem(1, "TV Series"),
     )
 }
+
+val movieList = listOf(
+    Result(
+        adult = false,
+        backdropPath = "/6MKr3KgOLmzOP6MSuZERO41Lpkt.jpg",
+        genreIds = listOf(28, 12, 14),
+        id = 460465,
+        mediaType = "movie",
+        originalLanguage = "en",
+        originalTitle = "Mortal Kombat",
+        overview = "Washed-up MMA fighter Cole Young, unaware of his heritage, and hunted by Emperor Shang Tsung's best warrior, Sub-Zero, seeks out and trains with Earth's greatest champions as he prepares to stand against the enemies of Outworld in a high stakes battle for the universe.",
+        popularity = 3173.0,
+        posterPath = "/xGuOF1T3WmPsAcQEQJfnG7Ud9f8.jpg",
+        releaseDate = "2021-04-07",
+        title = "Mortal Kombat",
+        video = false,
+        voteAverage = 7.8,
+        voteCount = 2452
+    ),
+    Result(
+        adult = false,
+        backdropPath = "/6MKr3KgOLmzOP6MSuZERO41Lpkt.jpg",
+        genreIds = listOf(28, 12, 14),
+        id = 460462,
+        mediaType = "movie",
+        originalLanguage = "en",
+        originalTitle = "Mortal Kombat",
+        overview = "Washed-up MMA fighter Cole Young, unaware of his heritage, and hunted by Emperor Shang Tsung's best warrior, Sub-Zero, seeks out and trains with Earth's greatest champions as he prepares to stand against the enemies of Outworld in a high stakes battle for the universe.",
+        popularity = 3173.0,
+        posterPath = "/xGuOF1T3WmPsAcQEQJfnG7Ud9f8.jpg",
+        releaseDate = "2021-04-07",
+        title = "Mortal Kombat 2",
+        video = false,
+        voteAverage = 7.8,
+        voteCount = 2452
+    ),
+)
 val genres = listOf(
     FilterItem(28, "Action"),
     FilterItem(12, "Adventure"),

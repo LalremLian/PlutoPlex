@@ -41,6 +41,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.lazydeveloper.plutoplex.R
 import com.lazydeveloper.network.model.PopularMovieResponse
 import com.lazydeveloper.network.model.TrendingMovieResponse
+import com.lazydeveloper.network.model.global.Result
 import com.lazydeveloper.plutoplex.navigation.Screen
 import com.lazydeveloper.plutoplex.presentation.composables.CustomImage
 import com.lazydeveloper.plutoplex.presentation.composables.CustomImageAsync
@@ -125,7 +126,7 @@ fun MovieScreen(
 
 @Composable
 fun MovieItem(
-    it: PopularMovieResponse.Result,
+    it: Result,
     navController: NavController
 ) {
     val context = LocalContext.current
@@ -221,7 +222,7 @@ fun MovieItem(
 
 @Composable
 fun MovieTrendingItem(
-    it: TrendingMovieResponse.Result,
+    it: Result,
     navController: NavController
 ) {
     val context = LocalContext.current

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -66,10 +67,11 @@ fun CustomImageCarousel(
     Column(modifier = Modifier.wrapContentSize()) {
         HorizontalPager(
             state = pagerState,
-            contentPadding = PaddingValues(horizontal = 120.dp),
+            contentPadding = PaddingValues(horizontal = 95.dp),
             pageSpacing = 5.dp,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 30.dp)
                 .onGloballyPositioned {
                     onGlobalPositionedSize?.invoke(
                         pagerState.currentPage % sliderList.results?.size!!,
@@ -80,9 +82,10 @@ fun CustomImageCarousel(
             Card(
                 border = BorderStroke(1.dp, Color(0xFFB3B3B3)),
                 modifier = Modifier
-                    .padding(4.dp)
-                    .height(210.dp)
-                    .width(210.dp)
+                    .padding(horizontal =6.dp)
+//                    .height(210.dp)
+//                    .width(210.dp)
+                    .aspectRatio(0.67f / 1f)
                     .clickable {
                         if (sliderList.results?.get(index)?.mediaType == "tv") {
                             navController.navigate(
