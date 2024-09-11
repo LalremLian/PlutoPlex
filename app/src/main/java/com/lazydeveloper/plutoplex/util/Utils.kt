@@ -1,4 +1,0 @@
-
-package com.lazydeveloper.plutoplex.util
-
-const val API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNTEwZmY4NTA2OGM4MmYzOTYxMGU5MjdmMTM4NTA5ZiIsInN1YiI6IjY1ZGFjZWIwNGMxZDlhMDE3ZDZmNzRmMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.qT-UqDSIHjClFevW4c_B7tjxjpqGCrkADtpBjSluX1k"

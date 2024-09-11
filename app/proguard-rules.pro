@@ -20,7 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class com.lazydeveloper.plutoplex.domain.model.** { *; }
+-keep class com.lazydeveloper.trelloplex.domain.model.** { *; }
 
 
 

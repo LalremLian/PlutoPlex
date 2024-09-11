@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "143052505307",
-    "project_id": "plutoplex-e1dd2",
-    "storage_bucket": "plutoplex-e1dd2.appspot.com"
+    "project_number": "160363752470",
+    "project_id": "trelloplex",
+    "storage_bucket": "trelloplex.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:143052505307:android:26466ebf93daf3116e4cfe",
+        "mobilesdk_app_id": "1:160363752470:android:ba8291d53ff607ff43d937",
         "android_client_info": {
-          "package_name": "com.lazydeveloper.plutoplex"
+          "package_name": "com.lazydeveloper.trelloplex"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCiiig9OaiN2EeqYH06-ZN2ltBCWk2I-1E"
+          "current_key": "AIzaSyC-o_w0vFG0kYvZAo2WFYYG3nV2mJWPRdM"
         }
       ],
       "services": {

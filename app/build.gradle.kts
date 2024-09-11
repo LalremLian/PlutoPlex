@@ -13,11 +13,11 @@ plugins {
 }
 
 android {
-    namespace = "com.lazydeveloper.plutoplex"
+    namespace = "com.lazydeveloper.trelloplex"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.lazydeveloper.plutoplex"
+        applicationId = "com.lazydeveloper.trelloplex"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
