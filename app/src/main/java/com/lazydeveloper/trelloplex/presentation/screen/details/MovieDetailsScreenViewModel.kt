@@ -3,6 +3,7 @@ package com.lazydeveloper.trelloplex.presentation.screen.details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lazydeveloper.data.Resource
+import com.lazydeveloper.data.preference.SessionPreference
 import com.lazydeveloper.data.repository.AppRepositorySecond
 import com.lazydeveloper.data.repository.DatabaseRepo
 import com.lazydeveloper.database.entities.HistoryEntity
@@ -19,8 +20,11 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailsScreenViewModel @Inject constructor(
     private val appRepo: AppRepositorySecond,
-    private val dbRepo: DatabaseRepo
+    private val dbRepo: DatabaseRepo,
+    sessionPreference: SessionPreference
 ): ViewModel(){
+    val mPref = sessionPreference
+
     private val _movieDetailsFlow = MutableStateFlow<Resource<DetailsResponse>>(Resource.Loading)
     val movieDetailsFlow = _movieDetailsFlow.asStateFlow()
 

@@ -162,7 +162,7 @@ fun HistoryScreenBody(
         LazyColumn {
             items(searchHistoryListState.value.size) { index ->
                 val searchHistory = searchHistoryListState.value[index]
-                HistoryItem(navController = navController, searchHistory = searchHistory)
+                HistoryItem(navController = navController, searchHistory = searchHistory, viewModel = viewModel)
             }
         }
     }
@@ -172,10 +172,9 @@ fun HistoryScreenBody(
 fun HistoryItem(
     navController: NavController,
     searchHistory: HistoryEntity,
+    viewModel: HistoryScreenViewModel
 ) {
-    val context = LocalContext.current
-    val mPref = context.getSharedPrefs()
-    val isEmpty = mPref.getString(CommonEnum.VERSION.toString(), "")
+    val isEmpty = viewModel.mPref.appVersion
     val gson = Gson()
     val type = object : TypeToken<List<String>>() {}.type
     val newList: List<String> = gson.fromJson(searchHistory.genre, type)
@@ -221,7 +220,7 @@ fun HistoryItem(
                     )
                 } else {
                     CustomImageAsync(
-                        imageUrl = "${mPref.getString(CommonEnum.TMDB_IMAGE_PATH.toString(),"")}${searchHistory.poster}",
+                        imageUrl = "${viewModel.mPref.tmdbImagePath}${searchHistory.poster}",
                         size = 512,
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))

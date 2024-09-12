@@ -25,11 +25,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,7 +38,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,24 +56,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
+import com.lazydeveloper.data.Resource
+import com.lazydeveloper.database.entities.HistoryEntity
+import com.lazydeveloper.network.model.DetailsResponse
+import com.lazydeveloper.network.model.FireStoreServer
+import com.lazydeveloper.network.model.FttpMoviePlalyerResponse
 import com.lazydeveloper.trelloplex.R
 import com.lazydeveloper.trelloplex.navigation.Screen
 import com.lazydeveloper.trelloplex.presentation.composables.AnimatedPreloader
 import com.lazydeveloper.trelloplex.presentation.composables.CustomImage
 import com.lazydeveloper.trelloplex.presentation.composables.CustomImageAsync
 import com.lazydeveloper.trelloplex.presentation.composables.CustomText
-import com.lazydeveloper.trelloplex.ui.theme.Background_Black
-import com.lazydeveloper.trelloplex.ui.theme.Loading_Orange
-import com.lazydeveloper.trelloplex.util.CommonEnum
-import com.lazydeveloper.trelloplex.util.downloadFile
-import com.lazydeveloper.trelloplex.util.getSharedPrefs
 import com.lazydeveloper.trelloplex.presentation.composables.showInterstitial
 import com.lazydeveloper.trelloplex.presentation.composables.showInterstitial2
-import com.lazydeveloper.data.Resource
-import com.lazydeveloper.database.entities.HistoryEntity
-import com.lazydeveloper.network.model.DetailsResponse
-import com.lazydeveloper.network.model.FireStoreServer
-import com.lazydeveloper.network.model.FttpMoviePlalyerResponse
+import com.lazydeveloper.trelloplex.ui.theme.Background_Black
+import com.lazydeveloper.trelloplex.ui.theme.Loading_Orange
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
@@ -89,18 +85,14 @@ fun DetailsScreen(
     id: Int,
 ) {
     val context = LocalContext.current
-    val mPref = context.getSharedPrefs()
+
     val movieDetailsState by viewModel.movieDetailsFlow.collectAsState()
-    val externalState by viewModel.externalStateFlow.collectAsState()
-    val movieWatchFileState by viewModel.fttpMovieStateFlow.collectAsState()
 
     var isServerAvailable by remember { mutableStateOf(true) }
     val db = FirebaseFirestore.getInstance()
     var response: FireStoreServer
 
-    var movieModel by remember { mutableStateOf<FttpMoviePlalyerResponse?>(null) }
-
-    val movieUrl = mPref.getString(CommonEnum.FTTP_MOVIE_URL.toString(), "")
+    val movieModel by remember { mutableStateOf<FttpMoviePlalyerResponse?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.fetchMovieDetails(id)
@@ -115,53 +107,6 @@ fun DetailsScreen(
             Log.e("FirebaseInit", "onCreate: ${e.message}")
         }
     }
-
-    // Fetching the movie details tt234023
-//    externalState.let {
-//        when (it) {
-//            is Resource.Loading -> {}
-//
-//            is Resource.Success -> {
-//                val movieModel = it.data
-//                viewModel.fetchMoveWatchFile(movieModel.imdbId!!.toString())
-////                ScrapVidSrcComposable(url = "$movieUrl${movie.imdbId.toString()}")
-//            }
-//
-//            is Resource.Error -> {
-//                Log.e("DARK", "onCreate: Error")
-//            }
-//        }
-//    }
-
-    // Fetching the movie watch file
-//    movieWatchFileState.let {
-//        when (it) {
-//            is Resource.Loading -> {
-//                Log.e("DARK1", "onCreate: Loading")
-//            }
-//
-//            is Resource.Success -> {
-//                Log.e("DARK1", "onCreate: Success")
-////                val movie = it.data
-//                movieModel = it.data
-//
-//                if (movieModel?.isEmpty() == false){
-//                    mPref.edit().putString(
-//                        CommonEnum.VIDEO_SOURCE.toString(),
-//                        movieModel!![0].movieWatchLink
-//                    ).apply()
-//                }else{
-//                    Log.e("DARK", "onCreate: null")
-//                    mPref.edit().putString(CommonEnum.VIDEO_SOURCE.toString(), "error").apply()
-//                }
-//            }
-//
-//            is Resource.Error -> {
-//                Log.e("DARK1", "onCreate: Error")
-//                mPref.edit().putString(CommonEnum.VIDEO_SOURCE.toString(), "error").apply()
-//            }
-//        }
-//    }
 
     movieDetailsState.let {
         when (it) {
@@ -183,6 +128,7 @@ fun DetailsScreen(
                     movie = movie,
                     movieWatchFileDetails = movieModel ?: FttpMoviePlalyerResponse(),
                     navController = navController,
+                    viewModel = viewModel,
                     isServerAvailable = mutableStateOf(isServerAvailable),
                     onClick = {
                         val randomInt = Random.nextInt(1, 6)
@@ -284,17 +230,17 @@ fun DetailsScreenContent(
     movie: DetailsResponse,
     movieWatchFileDetails: FttpMoviePlalyerResponse = FttpMoviePlalyerResponse(),
     navController: NavController,
+    viewModel: MovieDetailsScreenViewModel? = null,
     isServerAvailable: MutableState<Boolean>,
     onClick: () -> Unit = {},
     onClick2: () -> Unit = {},
 ) {
     val context: Context = LocalContext.current
-    val viewModel = hiltViewModel<MovieDetailsScreenViewModel>()
     val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-    val mPref = context.getSharedPrefs()
-    val isEmpty = mPref.getString(CommonEnum.VERSION.toString(), "")
-    val bolgSite = mPref.getString(CommonEnum.BLOG_SITE.toString(), "")
+
+    val isEmpty = viewModel?.mPref?.appVersion
+    val bolgSite = viewModel?.mPref?.blogSite
+
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var showDownloadDialog by remember { mutableStateOf(false) }
@@ -342,102 +288,6 @@ fun DetailsScreenContent(
                             .padding(horizontal = 20.dp, vertical = 4.dp)
                             .fillMaxWidth(),
                     ) {
-/*                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(46.dp)
-                                .padding(horizontal = 6.dp)
-                                .clip(RoundedCornerShape(5.dp))
-                                .clickable {
-                                    if (mPref.getString(
-                                            CommonEnum.VIDEO_SOURCE.toString(),
-                                            ""
-                                        ) == "error"
-                                    ) {
-                                        Toast
-                                            .makeText(
-                                                context,
-                                                "Server 1 is not available at the moment.",
-                                                Toast.LENGTH_SHORT
-                                            )
-                                            .show()
-                                        return@clickable
-                                    }
-                                    viewModel.addHistory(
-                                        HistoryEntity(
-                                            movieId = movie.id.toString(),
-                                            movieName = movie.title.toString(),
-                                            type = "movie",
-                                            watchDate = currentDate.toString(),
-                                            poster = movie.posterPath.toString(),
-                                            year = if (movie.releaseDate?.length!! >= 4) movie.releaseDate
-                                                .toString()
-                                                .substring(
-                                                    0,
-                                                    4
-                                                ) else movie.releaseDate.toString(),
-                                            region = movie.productionCountries?.getOrNull(0)?.name
-                                                ?: "",
-                                            genre = json,
-                                        )
-                                    )
-                                    showBottomSheet = false
-                                    showDialog = false
-                                    navController.navigate(
-                                        Screen.Media3Screen.passArguments(
-                                            url = Uri.encode(
-                                                "${
-                                                    mPref.getString(
-                                                        CommonEnum.VIDEO_SOURCE.toString(),
-                                                        ""
-                                                    )
-                                                }"
-                                            ),
-                                            movieTitle = movie.originalTitle.toString()
-                                        )
-                                    )
-                                }
-                                .border(1.dp, Loading_Orange, shape = RoundedCornerShape(5.dp))
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .padding(start = 16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                CustomImage(
-                                    imageId = R.drawable.ic_server,
-                                    contentDescription = "server",
-                                    modifier = Modifier
-                                        .size(28.dp),
-                                    contentScale = ContentScale.Crop
-                                )
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .padding(start = 16.dp),
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    CustomText(
-                                        text = "Server 1",
-                                        color = Color.White,
-                                        fontSize = 15.sp,
-                                        fontWeight = FontWeight.W500,
-                                        modifier = Modifier.padding(top = 1.dp, end = 10.dp)
-                                    )
-                                    CustomText(
-                                        text = "Dubbed in Hindi/English",
-                                        color = Color(0xFF919191),
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.W400,
-                                        modifier = Modifier.padding(top = 0.dp, end = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))*/
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -445,7 +295,7 @@ fun DetailsScreenContent(
                                 .padding(horizontal = 6.dp)
                                 .clip(RoundedCornerShape(5.dp))
                                 .clickable {
-                                    viewModel.addHistory(
+                                    viewModel?.addHistory(
                                         HistoryEntity(
                                             movieId = movie.id.toString(),
                                             movieName = movie.title.toString(),
@@ -521,7 +371,7 @@ fun DetailsScreenContent(
                                 .clickable {
                                     showBottomSheet = false
                                     showDialog = false
-                                    viewModel.addHistory(
+                                    viewModel?.addHistory(
                                         HistoryEntity(
                                             movieId = movie.id.toString(),
                                             movieName = movie.title.toString(),
@@ -651,7 +501,7 @@ fun DetailsScreenContent(
                                 .padding(horizontal = 6.dp)
                                 .clip(RoundedCornerShape(5.dp))
                                 .clickable {
-                                    if (mPref.getString(
+/*                                    if (mPref.getString(
                                             CommonEnum.VIDEO_SOURCE.toString(),
                                             "error"
                                         ) == "error"
@@ -681,7 +531,7 @@ fun DetailsScreenContent(
                                             "${movie.title}.mp4"
                                         )
                                         showDownloadDialog = false
-                                    }
+                                    }*/
                                 }
                                 .border(1.dp, Loading_Orange, shape = RoundedCornerShape(5.dp))
                         ) {
@@ -722,12 +572,7 @@ fun DetailsScreenContent(
                 )
             } else {
                 CustomImageAsync(
-                    imageUrl = "${
-                        mPref.getString(
-                            CommonEnum.TMDB_IMAGE_PATH_BACK_COVER.toString(),
-                            ""
-                        )
-                    }${movie.backdropPath}",
+                    imageUrl = "${viewModel.mPref.tmdbImagePathBackCover}${movie.backdropPath}",
                     size = 512,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -782,12 +627,7 @@ fun DetailsScreenContent(
                     )
                 } else {
                     CustomImageAsync(
-                        imageUrl = "${
-                            mPref.getString(
-                                CommonEnum.TMDB_IMAGE_PATH.toString(),
-                                ""
-                            )
-                        }${movie.posterPath}",
+                        imageUrl = "${viewModel.mPref.tmdbImagePath}${movie.posterPath}",
                         size = 512,
                         modifier = Modifier
                             .fillMaxHeight()
@@ -1067,7 +907,7 @@ fun DetailsScreenContent(
                         .padding(horizontal = 20.dp)
                         .clip(RoundedCornerShape(5.dp))
                         .clickable {
-                            if(mPref.getString(CommonEnum.BLOG_SITE.toString(), "") != ""){
+                            if(viewModel?.mPref?.blogSite != ""){
                                 showDialogSite = true
                             }else{
                                 showInterstitial(

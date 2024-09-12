@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -115,23 +116,10 @@ fun SearchScreen(
 
                 is Resource.Success -> {
                     isLoading = false
-                    val movie = it.data
-
-                    LazyVerticalGrid(
-                        columns = GridCells.Adaptive(128.dp),
-                        contentPadding = PaddingValues(0.dp),
-                    ) {
-                        items(movie.results!!.size) { item ->
-                            if (movie.results!![item]?.mediaType.equals("movie")
-                                || movie.results!![item]?.mediaType.equals("tv")
-                            ) {
-                                SearchItem(
-                                    it = movie.results!![item]!!,
-                                    navController = navHostController
-                                )
-                            }
-                        }
-                    }
+                    SearchList(
+                        results = it.data.results,
+                        navController = navHostController
+                    )
                 }
 
                 is Resource.Error -> {
@@ -154,10 +142,50 @@ fun SearchScreen(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun SearchList(
+    results: List<SearchResponse.Result?>? = null,
+    navController: NavController? = null
+) {
+    if(results.isNullOrEmpty())
+    {
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(128.dp),
+            contentPadding = PaddingValues(0.dp),
+        ) {
+            items(9) { item ->
+                    SearchItem(
+                        it = null,
+                        navController = navController
+                    )
+
+            }
+        }
+    }else{
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(128.dp),
+            contentPadding = PaddingValues(0.dp),
+        ) {
+            items(results!!.size) { item ->
+                if (results[item]?.mediaType.equals("movie")
+                    || results[item]?.mediaType.equals("tv")
+                ) {
+                    SearchItem(
+                        it = results[item]!!,
+                        navController = navController
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
 @Composable
 fun SearchItem(
-    it: SearchResponse.Result,
-    navController: NavController
+    it: SearchResponse.Result? = null,
+    navController: NavController? = null
 ) {
     val context = LocalContext.current
     val mPref = context.getSharedPrefs()
@@ -173,16 +201,16 @@ fun SearchItem(
             .fillMaxWidth()
             .height(180.dp)
             .clickable {
-                if (it.mediaType.equals("movie")) {
-                    navController.navigate(
+                if (it?.mediaType.equals("movie")) {
+                    navController?.navigate(
                         Screen.MovieDetailsScreen.passArguments(
-                            it.id ?: 0
+                            it?.id ?: 0
                         )
                     )
                 } else {
-                    navController.navigate(
+                    navController?.navigate(
                         Screen.SeriesDetailsScreen.passArguments(
-                            it.id ?: 0
+                            it?.id ?: 0
                         )
                     )
                 }
@@ -218,7 +246,7 @@ fun SearchItem(
             )
             {
                 CustomText(
-                    text = it.mediaType!!.replaceFirstChar {
+                    text = it?.mediaType!!.replaceFirstChar {
                         if (it.isLowerCase()) it.titlecase(
                             Locale.ROOT
                         ) else it.toString()

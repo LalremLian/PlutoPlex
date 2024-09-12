@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -85,7 +86,8 @@ private fun isInternetConnected(context: Context): Boolean {
 @SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
 @Composable
 fun SplashScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: SplashScreenViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val mPref = context.getSharedPrefs()
@@ -110,12 +112,16 @@ fun SplashScreen(
             try {
                 val data = db.collection("data").get().await()
                 data.map {
+                    viewModel.mPref.saveFirebaseData(it.toObject(FireStoreServer::class.java))
                     response = it.toObject(FireStoreServer::class.java)
+                    viewModel.mPref.saveFirebaseData(response)
                     if (context.getVersionName() == response.version) {
-                        mPref.edit().putString(CommonEnum.VERSION.toString(), context.getVersionName()).apply()
+                        viewModel.mPref.appVersion = response.version
                     } else {
-                        mPref.edit().putString(CommonEnum.VERSION.toString(), "").apply()
+                        viewModel.mPref.appVersion = ""
                     }
+
+                    Log.e("FirebaseInit", "onCreate: ${viewModel.mPref.serverOne}")
 
                     mPref.edit().apply {
                         putString(CommonEnum.TMDB_IMAGE_PATH.toString(), response.tmdbImagePath)
@@ -215,7 +221,7 @@ fun SplashScreen(
                         .padding(top = 20.dp)
                         .align(alignment = Alignment.CenterHorizontally)
                 )
-                ServerErrorBody(navController)
+                ServerErrorBody(navController, viewModel)
 
             }
 
@@ -261,7 +267,8 @@ fun CustomSnackBar(
 
 @Composable
 fun ServerErrorBody(
-    navController: NavController
+    navController: NavController,
+    viewModel: SplashScreenViewModel? = null
 ) {
     Column(
         modifier = Modifier
@@ -299,16 +306,17 @@ fun ServerErrorBody(
                 .padding(horizontal = 30.dp)
                 .padding(top = 20.dp)
                 .clickable {
-                    openTelegram(navController)
+                    openTelegram(navController = navController, viewModel = viewModel)
                 }
         )
     }
 }
 
-fun openTelegram(navController: NavController) {
-    val context = navController.context
-    val mPref = context.getSharedPrefs()
-    val uri = Uri.parse(mPref.getString(CommonEnum.TELEGRAM_LINK.toString(), ""))
+fun openTelegram(
+    navController: NavController,
+    viewModel: SplashScreenViewModel? = null
+) {
+    val uri = Uri.parse(viewModel?.mPref?.telegramLink)
     val intent = Intent(Intent.ACTION_VIEW, uri)
     val packageManager = navController.context.packageManager
     if (intent.resolveActivity(packageManager) != null) {

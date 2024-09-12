@@ -17,13 +17,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.lazydeveloper.trelloplex.R
 import com.lazydeveloper.trelloplex.ui.theme.padding
 
 @SuppressLint("ComposableNaming")
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFFFF5FFF
+)
 @Composable
 fun CustomItem(
-    text: String = "",
+    text: String = "Title",
     icon: Int = R.drawable.ic_movie,
     nextIcon: Int = R.drawable.ic_next,
     isOpen: Boolean = false,

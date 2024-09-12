@@ -77,8 +77,8 @@ fun HomeScreen(
 ) {
     val activity = LocalContext.current as Activity
     val context = LocalContext.current
-    val mPref = context.getSharedPrefs()
-    val isEmpty = mPref.getString(CommonEnum.VERSION.toString(), "")
+
+    val isEmpty = viewModel.mPref.appVersion
 //    val viewModel: HomeScreenViewModel = viewModel()
     val networkState by viewModel.stateFlow.collectAsState()
     val trendingAllNetworkState by viewModel.trendingAllFlow.collectAsState()
@@ -100,9 +100,7 @@ fun HomeScreen(
     BackHandler { isExitDialogVisible.value = true }
 
     LaunchedEffect(Unit) {
-        val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        var version = pInfo.versionName
-        Log.e("FirebaseInit", "onCreate: $version")
+
         try {
             val data = db.collection("data").get().await()
             data.map {
@@ -173,7 +171,7 @@ fun HomeScreen(
                         )
                         .clickable {
                             val uri: Uri =
-                                Uri.parse(mPref.getString(CommonEnum.APP_URL.toString(), ""))
+                                Uri.parse(viewModel.mPref.appUrl)
                             val goToMarket = Intent(Intent.ACTION_VIEW, uri)
                             // To count with Play market backstack, After pressing back button,
                             // to taken back to our application, we need to add following flags to intent.
@@ -188,12 +186,7 @@ fun HomeScreen(
                                 context.startActivity(
                                     Intent(
                                         Intent.ACTION_VIEW,
-                                        Uri.parse(
-                                            mPref.getString(
-                                                CommonEnum.APP_URL.toString(),
-                                                ""
-                                            )
-                                        )
+                                        Uri.parse(viewModel.mPref.appUrl)
                                     )
                                 )
                             }
@@ -258,7 +251,7 @@ fun HomeScreen(
                         FetchData(
                             results = it.data.results,
                             isEmpty = isEmpty,
-                            mPref = mPref,
+                            viewModel = viewModel,
                             navController = navController
                         )
                     }
@@ -298,7 +291,7 @@ fun HomeScreen(
                         FetchData(
                             results = it.data.results,
                             isEmpty = isEmpty,
-                            mPref = mPref,
+                            viewModel = viewModel,
                             navController = navController
                         )
                     }
@@ -388,7 +381,7 @@ fun HomeScreen(
                                                 )
                                             }else{
                                                 CustomImageAsync(
-                                                    imageUrl = "${mPref.getString(CommonEnum.TMDB_IMAGE_PATH.toString(),"")}${it.posterPath}",
+                                                    imageUrl = "${viewModel.mPref.tmdbImagePath}${it.posterPath}",
                                                     size = 512,
                                                     modifier = Modifier
                                                         .clip(RoundedCornerShape(6.dp))
@@ -434,7 +427,7 @@ fun HomeScreen(
                                         }else{
 
                                             CustomText(
-                                                text = it?.name ?: "Error",
+                                                text = it.name ?: "Error",
                                                 fontSize = 12.sp,
                                                 fontWeight = FontWeight.SemiBold,
                                                 color = Color.White,
@@ -531,7 +524,7 @@ fun HomeScreen(
                                                 )
                                             }else{
                                                 CustomImageAsync(
-                                                    imageUrl = "${mPref.getString(CommonEnum.TMDB_IMAGE_PATH.toString(),"")}${it?.posterPath}",
+                                                    imageUrl = "${viewModel.mPref.tmdbImagePath}${it.posterPath}",
                                                     size = 512,
                                                     modifier = Modifier
                                                         .clip(RoundedCornerShape(6.dp))
@@ -574,9 +567,8 @@ fun HomeScreen(
                                                     .align(Alignment.Start)
                                             )
                                         }else{
-
                                             CustomText(
-                                                text = it?.name ?: "Error",
+                                                text = it.name ?: "Error",
                                                 fontSize = 12.sp,
                                                 fontWeight = FontWeight.SemiBold,
                                                 color = Color.White,

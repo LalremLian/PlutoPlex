@@ -66,23 +66,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
-import com.lazydeveloper.trelloplex.R
 import com.lazydeveloper.data.Resource
 import com.lazydeveloper.database.entities.HistoryEntity
 import com.lazydeveloper.network.model.FireStoreServer
 import com.lazydeveloper.network.model.SeriesDetailsResponse
+import com.lazydeveloper.trelloplex.R
 import com.lazydeveloper.trelloplex.navigation.Screen
 import com.lazydeveloper.trelloplex.presentation.composables.AnimatedPreloader
 import com.lazydeveloper.trelloplex.presentation.composables.CustomEpisodeItem
 import com.lazydeveloper.trelloplex.presentation.composables.CustomImage
 import com.lazydeveloper.trelloplex.presentation.composables.CustomImageAsync
 import com.lazydeveloper.trelloplex.presentation.composables.CustomText
-import com.lazydeveloper.trelloplex.ui.theme.Background_Black
-import com.lazydeveloper.trelloplex.ui.theme.Loading_Orange
-import com.lazydeveloper.trelloplex.util.CommonEnum
-import com.lazydeveloper.trelloplex.util.getSharedPrefs
 import com.lazydeveloper.trelloplex.presentation.composables.showInterstitial
 import com.lazydeveloper.trelloplex.presentation.composables.showInterstitial2
+import com.lazydeveloper.trelloplex.ui.theme.Background_Black
+import com.lazydeveloper.trelloplex.ui.theme.Loading_Orange
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
@@ -115,11 +113,10 @@ fun SeriesDetailsScreen(
 
             is Resource.Success -> {
                 val movie = it.data
-//                val filteredSeasons = movie.seasons?.filter { it?.name?.startsWith("Season") == true }
-//                val movieWithFilteredSeasons = movie.copy(seasons = filteredSeasons)
                 SeriesDetailsScreenContent(
                     movie = movie,
-                    navController = navController
+                    navController = navController,
+                    viewModel = viewModel
                 ) {
                     val randomInt = Random.nextInt(1, 6)
                     if (randomInt == 3) {
@@ -156,12 +153,12 @@ fun SeriesDetailsScreen(
 fun SeriesDetailsScreenContent(
     movie: SeriesDetailsResponse,
     navController: NavController,
+    viewModel: SeriesDetailsScreenViewModel,
     onClick: () -> Unit = {}
 ) {
-    val viewModel = hiltViewModel<SeriesDetailsScreenViewModel>()
     val sheetState = rememberModalBottomSheetState()
     val context: Context = LocalContext.current
-    val mPref = context.getSharedPrefs()
+//    val mPref = context.getSharedPrefs()
     var showBottomSheet by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState(pageCount = { 2 })
     val coroutineScope = rememberCoroutineScope()
@@ -170,9 +167,10 @@ fun SeriesDetailsScreenContent(
 
     val selectedSeason = remember { mutableStateOf("1") }
     val languageExpand = remember { mutableStateOf(false) }
-    var isServerSelected = remember { mutableStateOf(false) }
-    val isEmpty = mPref.getString(CommonEnum.VERSION.toString(), "")
-    val bolgSite = mPref.getString(CommonEnum.BLOG_SITE.toString(), "")
+
+    val isEmpty = viewModel.mPref.appVersion
+    val bolgSite = viewModel.mPref.blogSite
+
     val selectedLanguageIndex = remember { mutableIntStateOf(0) }
     val sdf = SimpleDateFormat("h:mm a / d MMM yyyy", Locale.getDefault())
     val currentDate = sdf.format(Date())
@@ -209,37 +207,6 @@ fun SeriesDetailsScreenContent(
             }
         )
     }
-
-//    if (isServerSelected.value) {
-//        Log.e(
-//            "DARK",
-//            "SeriesDetailsScreenContent: ${
-//                mPref.getString(
-//                    CommonEnum.FTTP_TV_URL.toString(),
-//                    ""
-//                )
-//            }${movie.id}&season=${selectedSeason.value.toInt()}&episode=${
-//                mPref.getInt(
-//                    "my_key",
-//                    0
-//                )
-//            }"
-//        )
-//        ScrapVidSrcComposable(
-//            url = "${
-//                mPref.getString(
-//                    CommonEnum.FTTP_TV_URL.toString(),
-//                    ""
-//                )
-//            }${movie.id}&season=${selectedSeason.value.toInt()}&episode=${
-//                mPref.getInt(
-//                    "my_key",
-//                    0
-//                )
-//            }",
-////            url = "http://abistation.net/#/player?id=106379&season=1&episode=1",
-//        )
-//    }
 
     if (showDialog) {
         if (isServerAvailable) {
@@ -296,7 +263,7 @@ fun SeriesDetailsScreenContent(
                                         Screen.SeriesPlayerScreen.passArguments(
                                             comicId = movie.id ?: 0,
                                             seasonId = selectedSeason.value.toInt(),
-                                            episodeId = mPref.getInt("my_key", 0),
+                                            episodeId = viewModel.mPref.selectedEpisode,
                                             serverId = 2
                                         )
                                     )
@@ -373,7 +340,7 @@ fun SeriesDetailsScreenContent(
                                         Screen.SeriesPlayerScreen.passArguments(
                                             comicId = movie.id ?: 0,
                                             seasonId = selectedSeason.value.toInt(),
-                                            episodeId = mPref.getInt("my_key", 0),
+                                            episodeId = viewModel.mPref.selectedEpisode,
                                             serverId = 1
                                         )
                                     )
@@ -417,106 +384,6 @@ fun SeriesDetailsScreenContent(
                                 }
                             }
                         }
-//                        Spacer(modifier = Modifier.height(8.dp))
-//                        Box(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .height(46.dp)
-//                                .padding(horizontal = 6.dp)
-//                                .clip(RoundedCornerShape(5.dp))
-//                                .clickable {
-//                                    coroutineScope.launch {
-//                                        delay(400).apply {
-//                                            showBottomSheet = false
-//                                            showDialog = false
-//                                            viewModel.addHistory(
-//                                                HistoryEntity(
-//                                                    movieId = movie.id.toString(),
-//                                                    movieName = movie.name.toString(),
-//                                                    type = "tv",
-//                                                    watchDate = currentDate.toString(),
-//                                                    poster = movie.posterPath.toString(),
-//                                                    year = if (movie.firstAirDate?.length!! >= 4) movie.firstAirDate
-//                                                        .toString()
-//                                                        .substring(
-//                                                            0,
-//                                                            4
-//                                                        ) else movie.firstAirDate.toString(),
-//                                                    region = movie.productionCountries?.getOrNull(
-//                                                        0
-//                                                    )?.name ?: "",
-//                                                    genre = json,
-//                                                )
-//                                            )
-//                                            if (mPref.getString(
-//                                                    CommonEnum.VIDEO_SOURCE.toString(),
-//                                                    ""
-//                                                ) == "error"
-//                                            ) {
-//                                                Toast
-//                                                    .makeText(
-//                                                        context,
-//                                                        "Server 3 is not available at the moment.",
-//                                                        Toast.LENGTH_SHORT
-//                                                    )
-//                                                    .show()
-//                                                return@launch
-//                                            }
-//                                            navController.navigate(
-//                                                Screen.Media3Screen.passArguments(
-//                                                    url = Uri.encode(
-//                                                        "${
-//                                                            mPref.getString(
-//                                                                CommonEnum.VIDEO_SOURCE.toString(),
-//                                                                ""
-//                                                            )
-//                                                        }"
-//                                                    ),
-//                                                    movieTitle = movie.originalName.toString()
-//                                                )
-//                                            )
-//                                        }
-//                                    }
-//                                }
-//                                .border(1.dp, Loading_Orange, shape = RoundedCornerShape(5.dp))
-//                        ) {
-//                            Row(
-//                                modifier = Modifier
-//                                    .fillMaxHeight()
-//                                    .padding(start = 16.dp),
-//                                horizontalArrangement = Arrangement.SpaceBetween,
-//                                verticalAlignment = Alignment.CenterVertically
-//                            ) {
-//                                CustomImage(
-//                                    imageId = R.drawable.ic_server,
-//                                    contentDescription = "server",
-//                                    modifier = Modifier
-//                                        .size(28.dp),
-//                                    contentScale = ContentScale.Crop
-//                                )
-//                                Column(
-//                                    modifier = Modifier
-//                                        .fillMaxHeight()
-//                                        .padding(start = 16.dp),
-//                                    verticalArrangement = Arrangement.Center
-//                                ) {
-//                                    CustomText(
-//                                        text = "Server 3",
-//                                        color = Color.White,
-//                                        fontSize = 15.sp,
-//                                        fontWeight = FontWeight.W500,
-//                                        modifier = Modifier.padding(top = 1.dp, end = 10.dp)
-//                                    )
-//                                    CustomText(
-//                                        text = "Dubbed in Hindi/English",
-//                                        color = Color(0xFF919191),
-//                                        fontSize = 11.sp,
-//                                        fontWeight = FontWeight.W400,
-//                                        modifier = Modifier.padding(top = 0.dp, end = 2.dp)
-//                                    )
-//                                }
-//                            }
-//                        }
                         Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
@@ -544,12 +411,7 @@ fun SeriesDetailsScreenContent(
                 )
             } else {
                 CustomImageAsync(
-                    imageUrl = "${
-                        mPref.getString(
-                            CommonEnum.TMDB_IMAGE_PATH_BACK_COVER.toString(),
-                            ""
-                        )
-                    }${movie.backdropPath}",
+                    imageUrl = "${viewModel.mPref.tmdbImagePathBackCover}${movie.backdropPath}",
                     size = 512,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -604,12 +466,7 @@ fun SeriesDetailsScreenContent(
                     )
                 } else {
                     CustomImageAsync(
-                        imageUrl = "${
-                            mPref.getString(
-                                CommonEnum.TMDB_IMAGE_PATH.toString(),
-                                ""
-                            )
-                        }${movie.posterPath}",
+                        imageUrl = "${viewModel.mPref.tmdbImagePath}${movie.posterPath}",
                         size = 512,
                         modifier = Modifier
                             .fillMaxHeight()
@@ -750,7 +607,7 @@ fun SeriesDetailsScreenContent(
 
         HorizontalPager(state = pagerState) { page ->
             when (page) {
-                0 -> episodeIndex = ScreenOneContent(episodeCount = mutable, model = movie) {
+                0 -> episodeIndex = ScreenOneContent(episodeCount = mutable, model = movie, viewModel = viewModel) {
 //                    showInterstitial(context) {
                     showBottomSheet = true
 //                    }
@@ -800,7 +657,7 @@ fun SeriesDetailsScreenContent(
                         .clip(RoundedCornerShape(5.dp))
                         .clickable {
 //                            isServerSelected.value = true
-                            if(mPref.getString(CommonEnum.BLOG_SITE.toString(), "") != ""){
+                            if(viewModel.mPref.blogSite != ""){
                                 showDialogSite = true
                             }else{
                                 showInterstitial(
@@ -973,6 +830,7 @@ fun SeriesDetailsScreenContent(
 fun ScreenOneContent(
     episodeCount: Int,
     model: SeriesDetailsResponse,
+    viewModel: SeriesDetailsScreenViewModel,
     onClick: () -> Unit = {}
 ): Int {
     var index = 0
@@ -981,7 +839,7 @@ fun ScreenOneContent(
             .fillMaxSize()
     ) {
         items(model.seasons?.get(episodeCount)?.episodeCount!!) {
-            index = CustomEpisodeItem(it, model) {
+            index = CustomEpisodeItem(it, model, viewModel = viewModel) {
                 onClick.invoke()
             }
         }

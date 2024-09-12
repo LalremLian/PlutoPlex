@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lazydeveloper.trelloplex.R
 import com.lazydeveloper.network.model.SeriesDetailsResponse
+import com.lazydeveloper.trelloplex.presentation.screen.details.SeriesDetailsScreenViewModel
 import com.lazydeveloper.trelloplex.util.getSharedPrefs
 import com.lazydeveloper.trelloplex.util.putInt
 
@@ -29,17 +30,16 @@ import com.lazydeveloper.trelloplex.util.putInt
 fun CustomEpisodeItem(
     episode: Int,
     model: SeriesDetailsResponse,
+    viewModel: SeriesDetailsScreenViewModel,
     onClick: () -> Unit
 ):Int {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val sharedPreferences = context.getSharedPrefs()
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
                 onClick.invoke()
-                sharedPreferences.putInt("my_key", episode+1) },
+                viewModel.mPref.selectedEpisode = episode+1 },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(

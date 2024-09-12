@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.lazydeveloper.data.paging.FilterMoviePagingSource
 import com.lazydeveloper.data.paging.FilterTvPagingSource
+import com.lazydeveloper.data.preference.SessionPreference
 import com.lazydeveloper.data.repository.AppRepositorySecond
 import com.lazydeveloper.network.model.MovieFilterResponse
 import com.lazydeveloper.network.model.TvFilterResponse
@@ -22,7 +23,10 @@ import javax.inject.Inject
 @HiltViewModel
 class FilterTvScreenViewModel @Inject constructor(
     private val appRepo: AppRepositorySecond,
+    sessionPreference: SessionPreference
 ): ViewModel() {
+    val mPref = sessionPreference
+
     private val _popularMoviesFlow = MutableStateFlow<Flow<PagingData<TvFilterResponse.Result>>>(emptyFlow())
     val popularMoviesFlow: StateFlow<Flow<PagingData<TvFilterResponse.Result>>> = _popularMoviesFlow.asStateFlow()
 

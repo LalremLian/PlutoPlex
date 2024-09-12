@@ -119,6 +119,7 @@ fun MoreScreenBody(
         )
     }
 }
+
 fun openTelegram(navController: NavController) {
     val context = navController.context
     val mPref = context.getSharedPrefs()

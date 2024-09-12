@@ -121,8 +121,6 @@ fun FilterScreenViewModel(
     viewModel: FilterTvScreenViewModel = hiltViewModel(),
     affiliateClick: () -> Unit = {},
 ) {
-    val context = LocalContext.current
-    val mPref = context.getSharedPrefs()
     val singleSelectionStateType = remember { mutableIntStateOf(-1) }
     val multiSelectionStateGenre = remember { mutableStateOf(listOf<Int>()) }
     val singleSelectionStateCountry = remember { mutableIntStateOf(-1) }
@@ -381,7 +379,7 @@ fun FilterScreenViewModel(
                 )
             }
 
-            if (mPref.getString(CommonEnum.BANNER.toString(), "") == "true") {
+            if (viewModel.mPref.showAdmobBanner) {
                 AdsBanner()
             } else {
                 Row(
@@ -504,7 +502,7 @@ fun FilterScreenViewModel(
                 )
             }
 
-            if (mPref.getString(CommonEnum.BANNER.toString(), "") == "true") {
+            if (viewModel.mPref.showAdmobBanner) {
                 AdsBanner()
             } else {
                 Row(

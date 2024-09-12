@@ -3,6 +3,7 @@ package com.lazydeveloper.trelloplex.presentation.screen.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lazydeveloper.data.Resource
+import com.lazydeveloper.data.preference.SessionPreference
 import com.lazydeveloper.data.repository.AppRepositorySecond
 import com.lazydeveloper.network.model.PopularMovieResponse
 import com.lazydeveloper.network.model.PopularTvResponse
@@ -19,8 +20,11 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
 //    private val appRepo: AppRepository
-    private val appRepo: AppRepositorySecond
+    private val appRepo: AppRepositorySecond,
+    sessionPreference: SessionPreference
 ) : ViewModel() {
+
+    val mPref = sessionPreference
 
     private val _stateFlow = MutableStateFlow<Resource<PopularMovieResponse>>(Resource.Loading)
     val stateFlow = _stateFlow.asStateFlow()

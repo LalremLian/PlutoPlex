@@ -96,7 +96,7 @@ fun Header(
 fun FetchData(
     results: List<Result>? = movieList,
     isEmpty: String? = "",
-    mPref: SharedPreferences? = null,
+    viewModel: HomeScreenViewModel? = null,
     navController: NavController? = null,
 ) {
     LazyRow(
@@ -110,7 +110,7 @@ fun FetchData(
                 MovieItem(
                     it = it,
                     isEmpty = isEmpty,
-                    mPref = mPref,
+                    viewModel = viewModel,
                     navController = navController
                 )
             }
@@ -124,7 +124,7 @@ fun FetchData(
 fun MovieItem(
     it: Result? = null,
     isEmpty: String? = "",
-    mPref: SharedPreferences? = null,
+    viewModel: HomeScreenViewModel? = null,
     navController: NavController? = null,
 ){
     Column(
@@ -155,7 +155,7 @@ fun MovieItem(
                 )
             }else{
                 CustomImageAsync(
-                    imageUrl = "${mPref?.getString(CommonEnum.TMDB_IMAGE_PATH.toString(),"")}${it?.posterPath}",
+                    imageUrl = "${viewModel?.mPref?.tmdbImagePath}${it?.posterPath}",
                     size = 512,
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
