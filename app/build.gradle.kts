@@ -20,8 +20,8 @@ android {
         applicationId = "com.lazydeveloper.trelloplex"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.0.2"
+        versionCode = 1
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -62,6 +62,7 @@ android {
 dependencies {
     implementation(project(":data"))
     with(libs) {
+        implementation("com.unity3d.ads:unity-ads:4.7.0")
         // View
         implementation(splashscreen)
         implementation(material)

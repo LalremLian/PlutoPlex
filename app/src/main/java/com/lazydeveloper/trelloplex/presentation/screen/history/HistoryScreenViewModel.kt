@@ -19,7 +19,12 @@ class HistoryScreenViewModel @Inject constructor(
 ) : ViewModel() {
     val mPref = sessionPreference
     val searchHistoryListFlow2 = MutableStateFlow<List<HistoryEntity>>(emptyList())
-    fun getAllHistory() {
+
+    init {
+        getAllHistory()
+    }
+
+    private fun getAllHistory() {
         viewModelScope.launch(Dispatchers.IO) {
             var searchList = dbRepo.getAllHistory() ?: emptyList()
             searchHistoryListFlow2.value = searchList

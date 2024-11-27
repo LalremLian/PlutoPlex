@@ -1,5 +1,6 @@
 package com.lazydeveloper.trelloplex.presentation.screen.more
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -31,16 +33,26 @@ import com.lazydeveloper.trelloplex.util.getVersionName
 fun MoreScreen(
     navController: NavController
 ) {
-    MoreScreenBody(navController)
-}
-
-@Composable
-fun MoreScreenBody(
-    navController: NavController
-) {
     val context = LocalContext.current
     val mPref = context.getSharedPrefs()
-    val isEmpty = mPref.getString(CommonEnum.VERSION.toString(), "")
+    MoreScreenBody(
+        context = context,
+        version = context.getVersionName(),
+        navController = navController,
+        telegramLink = mPref.getString(CommonEnum.TELEGRAM_LINK.toString(),"") ?: "",
+        visitUsLink = mPref.getString(CommonEnum.VISIT_US.toString(),"") ?: ""
+    )
+}
+
+@Preview(showBackground = false)
+@Composable
+fun MoreScreenBody(
+    context: Context? = LocalContext.current,
+    navController: NavController? = null,
+    version: String = "",
+    telegramLink: String = "",
+    visitUsLink: String = ""
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,14 +82,14 @@ fun MoreScreenBody(
 //                .padding(bottom = 30.dp)
 //                .align(CenterHorizontally)
 //        )
-        if(mPref.getString(CommonEnum.TELEGRAM_LINK.toString(),"") != ""){
+        if(telegramLink != ""){
             CustomItem(
                 "Send Movie Request", R.drawable.ic_mail
             ) {
                 openTelegram(navController)
             }
         }
-        if(mPref.getString(CommonEnum.TELEGRAM_LINK.toString(),"") != ""){
+        if(telegramLink != ""){
             CustomItem(
                 "Join us on Telegram", R.drawable.ic_support
             ) {
@@ -87,21 +99,21 @@ fun MoreScreenBody(
         CustomItem(
             "History", R.drawable.ic_history
         ) {
-            navController.navigate(Screen.HistoryScreen.route)
+            navController?.navigate(Screen.HistoryScreen.route)
         }
-        if(mPref.getString(CommonEnum.VISIT_US.toString(),"") != ""){
+        if(visitUsLink != ""){
             CustomItem(
                 "Visit Us", R.drawable.ic_web
             ) {
                 val openURL = Intent(Intent.ACTION_VIEW)
-                openURL.data = Uri.parse(mPref.getString(CommonEnum.VISIT_US.toString(),""))
-                context.startActivity(openURL)
+                openURL.data = Uri.parse(visitUsLink)
+                context?.startActivity(openURL)
             }
         }
         CustomItem(
             "Privacy Policy", R.drawable.ic_privacy
         ) {
-            navController.navigate(Screen.PrivacyPolicyScreen.route)
+            navController?.navigate(Screen.PrivacyPolicyScreen.route)
         }
 //        CustomItem(
 //            "Copyright", R.drawable.ic_copyright
@@ -109,7 +121,7 @@ fun MoreScreenBody(
 //            navController.navigate(Screen.CopyrightScreen.route)
 //        }
         CustomText(
-            text = "Version ${context.getVersionName()}",
+            text = "Version $version",
             color = Color(0xFFBDBBBB),
             fontSize = 12.sp,
             fontWeight = FontWeight.W500,
@@ -120,16 +132,16 @@ fun MoreScreenBody(
     }
 }
 
-fun openTelegram(navController: NavController) {
-    val context = navController.context
-    val mPref = context.getSharedPrefs()
+fun openTelegram(navController: NavController? = null) {
+    val context = navController?.context
+    val mPref = context?.getSharedPrefs()
 
-    val uri = Uri.parse(mPref.getString(CommonEnum.TELEGRAM_LINK.toString(),""))
+    val uri = Uri.parse(mPref?.getString(CommonEnum.TELEGRAM_LINK.toString(),""))
     val intent = Intent(Intent.ACTION_VIEW, uri)
-    val packageManager = navController.context.packageManager
-    if (intent.resolveActivity(packageManager) != null) {
+    val packageManager = navController?.context?.packageManager
+    if (packageManager?.let { intent.resolveActivity(it) } != null) {
         navController.context.startActivity(intent)
     } else {
-        Toast.makeText(navController.context, "Browser or Telegram not installed", Toast.LENGTH_SHORT).show()
+        Toast.makeText(navController?.context, "Browser or Telegram not installed", Toast.LENGTH_SHORT).show()
     }
 }

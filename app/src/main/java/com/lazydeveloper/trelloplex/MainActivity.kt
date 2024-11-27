@@ -24,10 +24,15 @@ import com.lazydeveloper.trelloplex.navigation.RootNavGraph
 import com.lazydeveloper.trelloplex.ui.theme.CLVPlexTheme
 import com.lazydeveloper.trelloplex.presentation.composables.loadInterstitial
 import com.lazydeveloper.trelloplex.presentation.composables.removeInterstitial
+import com.unity3d.ads.IUnityAdsInitializationListener
+import com.unity3d.ads.UnityAds
+import com.unity3d.ads.UnityAds.initialize
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), IUnityAdsInitializationListener {
+    private val unityGameID = "f81c280f-b54d-4cb0-9dee-8529371ffb87"
+    private val testMode = true
 //    private lateinit var appUpdateManager: AppUpdateManager
     private val updateType = AppUpdateType.FLEXIBLE
     @RequiresApi(Build.VERSION_CODES.R)
@@ -39,6 +44,8 @@ class MainActivity : ComponentActivity() {
 //            appUpdateManager.registerListener(installStateUpdatedListener)
 //        }
 //        checkForAppUpdate()
+
+        initialize(applicationContext, unityGameID, testMode, this)
 
         MobileAds.initialize(this) {}
         MobileAds.setRequestConfiguration(
@@ -102,6 +109,17 @@ class MainActivity : ComponentActivity() {
 //        if (updateType == AppUpdateType.FLEXIBLE) {
 //            appUpdateManager.unregisterListener(installStateUpdatedListener)
 //        }
+    }
+
+    override fun onInitializationComplete() {
+
+    }
+
+    override fun onInitializationFailed(
+        error: UnityAds.UnityAdsInitializationError?,
+        message: String?
+    ) {
+
     }
 
 //    private val installStateUpdatedListener = InstallStateUpdatedListener { installState ->

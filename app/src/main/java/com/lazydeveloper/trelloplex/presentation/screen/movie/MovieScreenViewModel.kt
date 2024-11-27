@@ -7,14 +7,17 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.lazydeveloper.data.paging.MoviePagingSource
 import com.lazydeveloper.data.paging.TrendingMoviePagingSource
+import com.lazydeveloper.data.preference.SessionPreference
 import com.lazydeveloper.data.repository.AppRepositorySecond
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class MovieScreenViewModel @Inject constructor(
-    private val appRepo: AppRepositorySecond
+    private val appRepo: AppRepositorySecond,
+    sessionPreference: SessionPreference
 ): ViewModel() {
+    val mPref = sessionPreference
 
     val popularMoviesFlow = Pager(
         config = PagingConfig(pageSize = 20, enablePlaceholders = false),

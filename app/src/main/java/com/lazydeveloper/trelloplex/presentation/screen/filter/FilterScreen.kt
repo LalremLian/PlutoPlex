@@ -437,7 +437,14 @@ fun FilterScreenViewModel(
                 } else {
                     items(filterTvItems.itemCount) { index ->
                         val movie = filterTvItems[index]
-                        FilterTvItem(movie!!, navController)
+                        FilterTvItem(
+                            it = movie!!,
+                            onItemClick = { id ->
+                                navController.navigate(
+                                    Screen.SeriesDetailsScreen.passArguments(id)
+                                )
+                            }
+                        )
                     }
                 }
             }
@@ -560,7 +567,14 @@ fun FilterScreenViewModel(
                 } else {
                     items(filterMoviesItems.itemCount) { index ->
                         val movie = filterMoviesItems[index]
-                        FilterMovieItem(movie!!, navController)
+                        FilterMovieItem(
+                            it = movie!!,
+                            onItemClick = { id ->
+                                navController.navigate(
+                                    Screen.MovieDetailsScreen.passArguments(id)
+                                )
+                            }
+                        )
                     }
                 }
             }
@@ -633,175 +647,3 @@ fun CustomCheckbox(
     return singleSelectionState?.value ?: multiSelectionState?.value
 }
 
-@Composable
-fun FilterMovieItem(
-    it: MovieFilterResponse.Result,
-    navController: NavController
-) {
-    val context = LocalContext.current
-    val mPref = context.getSharedPrefs()
-    val isEmpty = mPref.getString(CommonEnum.VERSION.toString(), "")
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(240.dp)
-            .background(Color.Transparent)
-            .padding(8.dp)
-    ) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(180.dp)
-            .clickable {
-                Log.d("FilterTvItem", "Movie clicked: ${it.id}")
-                navController.navigate(
-                    Screen.MovieDetailsScreen.passArguments(
-                        it.id ?: 0
-                    )
-                )
-            }
-        ) {
-            if (isEmpty != "") {
-                CustomImage(
-                    imageId = R.drawable.ic_logo,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .fillMaxSize(),
-                    contentDescription = "ImageRequest example",
-                )
-            } else {
-                CustomImageAsync(
-                    imageUrl = "${
-                        mPref.getString(
-                            CommonEnum.TMDB_IMAGE_PATH.toString(),
-                            ""
-                        )
-                    }${it?.posterPath}",
-                    size = 512,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .fillMaxSize(),
-                    contentScale = ContentScale.FillBounds,
-                    contentDescription = "ImageRequest example",
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .width(35.dp)
-                    .height(25.dp)
-                    .padding(start = 5.dp, top = 5.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .align(Alignment.TopStart)
-                    .background(Background_Black_70)
-            )
-            {
-                CustomText(
-                    text = "HD",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                )
-            }
-
-        }
-        CustomText(
-            text = it.title ?: "Error",
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color.White,
-            maxLines = 2,
-            overFlow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .width(130.dp)
-                .padding(start = 5.dp, top = 5.dp, end = 5.dp)
-                .align(Alignment.Start)
-        )
-    }
-}
-
-@Composable
-fun FilterTvItem(
-    it: TvFilterResponse.Result,
-    navController: NavController
-) {
-    val context = LocalContext.current
-    val mPref = context.getSharedPrefs()
-    val isEmpty = mPref.getString(CommonEnum.VERSION.toString(), "")
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(240.dp)
-            .background(Color.Transparent)
-            .padding(8.dp)
-    ) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(180.dp)
-            .clickable {
-                navController.navigate(
-                    Screen.SeriesDetailsScreen.passArguments(
-                        it.id ?: 0
-                    )
-                )
-            }
-        ) {
-            if (isEmpty != "") {
-                CustomImage(
-                    imageId = R.drawable.ic_logo,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .fillMaxSize(),
-                    contentDescription = "ImageRequest example",
-                )
-            } else {
-                CustomImageAsync(
-                    imageUrl = "${
-                        mPref.getString(
-                            CommonEnum.TMDB_IMAGE_PATH.toString(),
-                            ""
-                        )
-                    }${it?.posterPath}",
-                    size = 512,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .fillMaxSize(),
-                    contentScale = ContentScale.FillBounds,
-                    contentDescription = "ImageRequest example",
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .width(35.dp)
-                    .height(25.dp)
-                    .padding(start = 5.dp, top = 5.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .align(Alignment.TopStart)
-                    .background(Background_Black_70)
-            )
-            {
-                CustomText(
-                    text = "HD",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                )
-            }
-
-        }
-        CustomText(
-            text = it.name ?: "Error",
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color.White,
-            maxLines = 2,
-            overFlow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .width(130.dp)
-                .padding(start = 5.dp, top = 5.dp, end = 5.dp)
-                .align(Alignment.Start)
-        )
-    }
-}

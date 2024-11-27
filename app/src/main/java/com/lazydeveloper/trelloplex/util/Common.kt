@@ -22,6 +22,8 @@ import androidx.annotation.RequiresApi
 import android.content.IntentFilter
 import android.os.Environment
 import android.widget.Toast
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 
 fun View.backPress() {
     this.setOnClickListener {
@@ -149,4 +151,10 @@ infix fun View.onClick(function: (View) -> Unit) {
     setOnClickListener {
         function.invoke(it)
     }
+}
+
+fun String?.fromJsonToStringList(): List<String> {
+    val gson = Gson()
+    val type = object : TypeToken<List<String>>() {}.type
+    return gson.fromJson(this, type) ?: emptyList()
 }
