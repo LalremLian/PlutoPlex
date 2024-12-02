@@ -24,10 +24,13 @@ PlutoPlex is a Netflix-inspired Over-The-Top (OTT) streaming application that le
 ![clv](https://github.com/user-attachments/assets/1b3b7cd4-1f15-4725-bf93-8a64fbf873e1)
 
 🌐 Setup & Installation
+
+- You can get the updated code on plutoplex branch
+
 Clone the repository:
 bash
 Copy code
-git clone https://github.com/your-repo/plutoplex.git  
+git clone [https://github.com/your-repo/plutoplex.git](https://github.com/LalremLian/PlutoPlex.git)  
 Open the project in Android Studio.
 
 Set up your API keys:
